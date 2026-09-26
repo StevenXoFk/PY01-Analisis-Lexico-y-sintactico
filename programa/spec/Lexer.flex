@@ -1,4 +1,4 @@
-package compilador.generador;
+package compilador.generated;
 
 import java_cup.runtime.Symbol;
 import compilador.ErrorReporter;
@@ -16,14 +16,10 @@ import compilador.ErrorReporter;
     private Symbol symbol(int type) {
         return new Symbol(type, yyline + 1, yycolumn + 1);
     }
-}
+%}
 
 %%
 
-[ \t\n\r\f]+ {
-    // Ignorar espacios en blanco
-}
+[ \t\n\r\f]+ {}
 
-[^] { 
-    ErrorReporter.lexico("Caracter no reconocido '" + yytext() + "'", yycolumn +1, yyline +1); 
-}
+[^] { ErrorReporter.lexico("Caracter no reconocido '" + yytext() + "'", yycolumn +1, yyline +1); }
