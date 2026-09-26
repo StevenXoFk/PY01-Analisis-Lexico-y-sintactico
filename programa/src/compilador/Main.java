@@ -1,5 +1,8 @@
 package compilador;
 
+//import compilador.generador.Lexer;
+//import compilador.generador.Parser;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -27,7 +30,7 @@ public class Main {
 
         try (Reader lector = new BufferedReader(new InputStreamReader(
             new FileInputStream(archivoFuente), StandardCharsets.UTF_8))) {
-                //
+                // encargese de crear el lexer y parser para analizar el archivo fuente lol y lo pone aca 
         } catch (Exception e) {
             System.out.println("El analisis se detuvo" + e.getMessage());
             System.out.println();
