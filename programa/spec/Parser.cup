@@ -1,0 +1,9 @@
+package compilador.generador;
+
+import java_cup.runtime.*;
+import compilador.ErrorReporter;
+
+terminal TEMPORAL;
+non terminal programa;
+
+programa ::= ;
