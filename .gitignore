@@ -1,1 +1,13 @@
-!programa/lib/*.jar
+# Compilados y generados
+programa/bin/
+programa/salida/
+programa/src/compilador/generated/
+*.class
+*~
+
+# Editores y sistema
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
