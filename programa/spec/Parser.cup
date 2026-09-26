@@ -1,4 +1,4 @@
-package compilador.generador;
+package compilador.generated;
 
 import java_cup.runtime.*;
 import compilador.ErrorReporter;
