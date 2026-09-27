@@ -1,9 +1,57 @@
 package compilador.generated;
 
 import java_cup.runtime.*;
-import compilador.ErrorReporter;
 
-terminal TEMPORAL;
+parser code {:
+    //Errores
+:};
+
+//  ===== Terminales =====
+
+// Lit y Identificadores
+terminal String LIT_INT, LIT_FLOAT, LIT_CHAR, LIT_STRING;
+terminal String ID;
+
+// Tipos
+terminal INT, FLOAT, BOOL, CHAR, STRING;
+
+// Reservados
+terminal VAL, READ, WRITE;
+terminal RETURN, BREAK;
+terminal IF, ELIF, ELSE, WHILE, FOR;
+terminal VOID, PRINCIPAL;
+
+// Delimitadores
+terminal OPEN_LLAVES, CLOSE_LLAVES;
+terminal OPEN_PAREN, CLOSE_PAREN;
+terminal OPEN_BRACKET, CLOSE_BRACKET;
+terminal FIN_SENTENCIA;
+terminal COMA;
+
+// Asignación
+terminal ASIGN;
+
+// Aritméticos
+terminal OP_SUMA, OP_RESTA, OP_MULT;
+terminal OP_DIV_DECIMAL, OP_DIV_ENTERA;
+terminal OP_MODULO, OP_POTENCIA;
+terminal OP_INCREMENTO, OP_DECREMENTO;
+
+// Relacionales
+terminal OP_MENOR, OP_MENOR_IGUAL;
+terminal OP_MAYOR, OP_MAYOR_IGUAL;
+terminal OP_IGUAL, OP_DIFERENTE;
+
+// Lógicos
+terminal OP_AND, OP_OR, OP_NEGACION;
+
+// Booleanos
+terminal TRUE, FALSE;
+
+// ++++++ No terminales ++++++++
 non terminal programa;
 
+start with programa;
+
+// +_++++++++ Producciones ++++++++
 programa ::= ;
