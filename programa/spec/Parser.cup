@@ -9,7 +9,7 @@ parser code {:
 //  ===== Terminales =====
 
 // Lit y Identificadores
-terminal String LIT_INT, LIT_FLOAT, LIT_BOOL, LIT_CHAR, LIT_STRING;
+terminal String LIT_INT, LIT_FLOAT, LIT_CHAR, LIT_STRING;
 terminal String ID;
 
 // Tipos
@@ -36,7 +36,6 @@ terminal OP_SUMA, OP_RESTA, OP_MULT;
 terminal OP_DIV_DECIMAL, OP_DIV_ENTERA;
 terminal OP_MODULO, OP_POTENCIA;
 terminal OP_INCREMENTO, OP_DECREMENTO;
-terminal OP_NEGATIVO;
 
 // Relacionales
 terminal OP_MENOR, OP_MENOR_IGUAL;
@@ -50,6 +49,8 @@ terminal OP_AND, OP_OR, OP_NEGACION;
 terminal TRUE, FALSE;
 
 // ++++++ No terminales ++++++++
+
+
 non terminal programa;
 non terminal elemento_programa_cm;
 non terminal elemento_programa;
@@ -61,7 +62,40 @@ non terminal var_simple;
 non terminal tipo_var;
 non terminal bloque;
 
-start with programa;
+// Declaraciones y asignaciones
+non terminal declaracion_global;
+non terminal creacion_simple;
+non terminal creacion_asign;
+non terminal asignacion;
+non terminal creacion_arreglo;
+non terminal asignacion_arreglo;
+non terminal valores;
+non terminal valor_asignable;
+
+// Literales y accesos
+non terminal literal;
+non terminal literal_numerico;
+non terminal acceso_arreglo;
+non terminal indice;
+
+// Sentencias
+non terminal sentencia;
+non terminal lista_sentencias;
+non terminal sentencia_var;
+non terminal sentencia_expr;
+non terminal expr_incremento;
+
+// Lectura, escritura y flujo de control simple
+non terminal sent_read;
+non terminal sent_write;
+non terminal sent_return;
+non terminal sent_break;
+non terminal arg_read;
+non terminal arg_write;
+non terminal expr_retorno;
+
+// Placeholder para expresiones
+non terminal expr_modulo;
 
 // +_++++++++ Producciones ++++++++
 tipo_retorno ::= INT
@@ -80,16 +114,96 @@ var_simple ::= tipo_var ID;
 lista_parametros ::= var_simple COMA lista_parametros
     | var_simple;
 
-bloque ::= OPEN_LLAVES CLOSE_LLAVES;
+bloque ::= OPEN_LLAVES lista_sentencias CLOSE_LLAVES;
 
-funcion ::= tipo_retorno ID OPEN_PAREN lista_parametros CLOSE_PAREN bloque 
-    | tipo_retorno ID OPEN_PAREN lista_parametros CLOSE_LLAVES;
+funcion ::= tipo_retorno ID OPEN_PAREN lista_parametros CLOSE_PAREN bloque
+    | tipo_retorno ID OPEN_PAREN CLOSE_PAREN bloque;
 
 funcion_principal ::= VOID PRINCIPAL OPEN_PAREN CLOSE_PAREN bloque;
 
-elemento_programa ::= funcion;
+declaracion_global ::= creacion_simple
+    | creacion_asign
+    | creacion_arreglo;
+
+elemento_programa ::= declaracion_global
+    | funcion;
 
 elemento_programa_cm ::= elemento_programa_cm elemento_programa
     | ;
 
 programa ::= elemento_programa_cm funcion_principal elemento_programa_cm;
+
+expr_retorno ::= expr_modulo;
+
+expr_modulo ::= LIT_INT
+    | LIT_FLOAT
+    | ID;
+
+literal_numerico ::= LIT_INT
+    | LIT_FLOAT;
+
+literal ::= literal_numerico
+    | LIT_CHAR
+    | LIT_STRING
+    | TRUE
+    | FALSE;
+
+indice ::= ID
+    | LIT_INT;
+
+acceso_arreglo ::= ID OPEN_BRACKET indice CLOSE_BRACKET;
+
+valor_asignable ::= expr_modulo;
+
+creacion_simple ::= VAL var_simple FIN_SENTENCIA;
+
+creacion_asign ::= VAL var_simple ASIGN valor_asignable FIN_SENTENCIA;
+
+asignacion ::= ID ASIGN valor_asignable FIN_SENTENCIA;
+
+creacion_arreglo ::= VAL tipo_var ID ASIGN OPEN_LLAVES valores CLOSE_LLAVES FIN_SENTENCIA;
+
+asignacion_arreglo ::= acceso_arreglo ASIGN valor_asignable FIN_SENTENCIA;
+
+valores ::= literal_numerico COMA valores
+    | literal_numerico;
+
+sentencia_expr ::= expr_modulo FIN_SENTENCIA
+    | expr_incremento FIN_SENTENCIA;
+
+expr_incremento ::= ID OP_INCREMENTO
+    | ID OP_DECREMENTO;
+
+arg_read ::= ID;
+
+arg_write ::= LIT_STRING
+    | LIT_INT
+    | LIT_FLOAT
+    | TRUE
+    | FALSE
+    | ID;
+
+sent_read ::= READ OPEN_PAREN arg_read CLOSE_PAREN FIN_SENTENCIA;
+
+sent_write ::= WRITE OPEN_PAREN arg_write CLOSE_PAREN FIN_SENTENCIA;
+
+sent_return ::= RETURN expr_retorno FIN_SENTENCIA
+    | RETURN FIN_SENTENCIA;
+
+sent_break ::= BREAK FIN_SENTENCIA;
+
+sentencia_var ::= creacion_simple
+    | creacion_asign
+    | asignacion
+    | creacion_arreglo
+    | asignacion_arreglo
+    | sentencia_expr;
+
+sentencia ::= sentencia_var
+    | sent_return
+    | sent_break
+    | sent_read
+    | sent_write;
+
+lista_sentencias ::= sentencia lista_sentencias
+    | ;
