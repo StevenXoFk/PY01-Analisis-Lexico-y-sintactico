@@ -9,7 +9,7 @@ parser code {:
 //  ===== Terminales =====
 
 // Lit y Identificadores
-terminal String LIT_INT, LIT_FLOAT, LIT_CHAR, LIT_STRING;
+terminal String LIT_INT, LIT_FLOAT, LIT_BOOL, LIT_CHAR, LIT_STRING;
 terminal String ID;
 
 // Tipos
@@ -36,6 +36,7 @@ terminal OP_SUMA, OP_RESTA, OP_MULT;
 terminal OP_DIV_DECIMAL, OP_DIV_ENTERA;
 terminal OP_MODULO, OP_POTENCIA;
 terminal OP_INCREMENTO, OP_DECREMENTO;
+terminal OP_NEGATIVO;
 
 // Relacionales
 terminal OP_MENOR, OP_MENOR_IGUAL;
@@ -50,8 +51,45 @@ terminal TRUE, FALSE;
 
 // ++++++ No terminales ++++++++
 non terminal programa;
+non terminal elemento_programa_cm;
+non terminal elemento_programa;
+non terminal funcion;
+non terminal funcion_principal;
+non terminal tipo_retorno;
+non terminal lista_parametros;
+non terminal var_simple;
+non terminal tipo_var;
+non terminal bloque;
 
 start with programa;
 
 // +_++++++++ Producciones ++++++++
-programa ::= ;
+tipo_retorno ::= INT
+    | FLOAT
+    | CHAR
+    | BOOL;
+
+tipo_var ::= INT
+    | BOOL
+    | FLOAT
+    | STRING 
+    | CHAR;
+
+var_simple ::= tipo_var ID;
+
+lista_parametros ::= var_simple COMA lista_parametros
+    | var_simple;
+
+bloque ::= OPEN_LLAVES CLOSE_LLAVES;
+
+funcion ::= tipo_retorno ID OPEN_PAREN lista_parametros CLOSE_PAREN bloque 
+    | tipo_retorno ID OPEN_PAREN lista_parametros CLOSE_LLAVES;
+
+funcion_principal ::= VOID PRINCIPAL OPEN_PAREN CLOSE_PAREN bloque;
+
+elemento_programa ::= funcion;
+
+elemento_programa_cm ::= elemento_programa_cm elemento_programa
+    | ;
+
+programa ::= elemento_programa_cm funcion_principal elemento_programa_cm;
