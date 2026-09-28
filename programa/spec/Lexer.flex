@@ -1,87 +1,25 @@
-/* JFlex example: partial Java language lexer specification */
-    import java_cup.runtime.*;
+package compilador.generated;
 
-    /**
-     * This class is a simple example lexer.
-     */
-    %%
+import java_cup.runtime.Symbol;
+import compilador.ErrorReporter;
 
-    %class Lexer
-    %unicode
-    %cup
-    %line
-    %column
+%%
 
-    %{
-      StringBuffer string = new StringBuffer();
+%class Lexer
+%public
+%unicode
+%cup
+%line
+%column
 
-      private Symbol symbol(int type) {
-        return new Symbol(type, yyline, yycolumn);
-      }
-      private Symbol symbol(int type, Object value) {
-        return new Symbol(type, yyline, yycolumn, value);
-      }
-    %}
-
-    LineTerminator = \r|\n|\r\n
-    InputCharacter = [^\r\n]
-    WhiteSpace     = {LineTerminator} | [ \t\f]
-
-    /* comments */
-    Comment = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
-
-    TraditionalComment   = "/" [^] ~"/" | "/" "*"+ "/"
-    // Comment can be the last line of the file, without line terminator.
-    EndOfLineComment     = "//" {InputCharacter}* {LineTerminator}?
-    DocumentationComment = "/*" {CommentContent} ""+ "/"
-    CommentContent       = ( [^] | \+ [^/] )
-
-    Identifier = [:jletter:] [:jletterdigit:]*
-
-    DecIntegerLiteral = 0 | [1-9][0-9]*
-
-    %state STRING
-
-    %%
-
-    /* keywords */
-    <YYINITIAL> "abstract"           { return symbol(sym.ABSTRACT); }
-    <YYINITIAL> "boolean"            { return symbol(sym.BOOLEAN); }
-    <YYINITIAL> "break"              { return symbol(sym.BREAK); }
-
-    <YYINITIAL> {
-      /* identifiers */ 
-      {Identifier}                   { return symbol(sym.IDENTIFIER); }
-     
-      /* literals */
-      {DecIntegerLiteral}            { return symbol(sym.INTEGER_LITERAL); }
-      \"                             { string.setLength(0); yybegin(STRING); }
-
-      /* operators */
-      "="                            { return symbol(sym.EQ); }
-      "=="                           { return symbol(sym.EQEQ); }
-      "+"                            { return symbol(sym.PLUS); }
-
-      /* comments */
-      {Comment}                      { /* ignore */ }
-     
-      /* whitespace */
-      {WhiteSpace}                   { /* ignore */ }
+%{
+    private Symbol symbol(int type) {
+        return new Symbol(type, yyline + 1, yycolumn + 1, yytext());
     }
+%}
 
-    <STRING> {
-      \"                             { yybegin(YYINITIAL); 
-                                       return symbol(sym.STRING_LITERAL, 
-                                       string.toString()); }
-      [^\n\r\"\\]+                   { string.append( yytext() ); }
-      \\t                            { string.append('\t'); }
-      \\n                            { string.append('\n'); }
+%%
 
-      \\r                            { string.append('\r'); }
-      \\\"                           { string.append('\"'); }
-      \\                             { string.append('\\'); }
-    }
+[ \t\n\r\f]+ {}
 
-    /* error fallback */
-    [^]                              { throw new Error("Illegal character <"+
-                                                        yytext()+">"); }
+[^] { ErrorReporter.lexico("Caracter no reconocido '" + yytext() + "'", yycolumn +1, yyline +1); }
