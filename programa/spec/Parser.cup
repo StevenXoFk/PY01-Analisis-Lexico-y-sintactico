@@ -97,6 +97,8 @@ non terminal expr_retorno;
 // Placeholder para expresiones
 non terminal expr_modulo;
 
+start with programa;
+
 // +_++++++++ Producciones ++++++++
 tipo_retorno ::= INT
     | FLOAT
@@ -161,7 +163,7 @@ creacion_asign ::= VAL var_simple ASIGN valor_asignable FIN_SENTENCIA;
 
 asignacion ::= ID ASIGN valor_asignable FIN_SENTENCIA;
 
-creacion_arreglo ::= VAL tipo_var ID ASIGN OPEN_LLAVES valores CLOSE_LLAVES FIN_SENTENCIA;
+creacion_arreglo ::= VAL var_simple ASIGN OPEN_LLAVES valores CLOSE_LLAVES FIN_SENTENCIA;
 
 asignacion_arreglo ::= acceso_arreglo ASIGN valor_asignable FIN_SENTENCIA;
 
