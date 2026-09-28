@@ -14,7 +14,7 @@ import compilador.ErrorReporter;
 
 %{
     private Symbol symbol(int type) {
-        return new Symbol(type, yyline + 1, yycolumn + 1);
+        return new Symbol(type, yyline + 1, yycolumn + 1, yytext());
     }
 %}
 
