@@ -94,6 +94,17 @@ non terminal arg_read;
 non terminal arg_write;
 non terminal expr_retorno;
 
+// expresiones Aritméticas
+non terminal expr_primaria;
+non terminal expr_negativo;
+non terminal expr_potencia;
+non terminal expr_aditiva;
+non terminal expr_multiplicativa;
+non terminal argumento_funcion;
+non terminal lista_argumentos_funcion;
+non terminal llamada_funcion;
+
+
 // Placeholder para expresiones
 non terminal expr_modulo;
 
@@ -137,12 +148,43 @@ programa ::= elemento_programa_cm funcion_principal elemento_programa_cm;
 
 expr_retorno ::= expr_modulo;
 
-expr_modulo ::= LIT_INT
-    | LIT_FLOAT
-    | ID;
+expr_modulo ::= expr_modulo OP_MODULO expr_multiplicativa
+    | expr_multiplicativa;
+
+expr_multiplicativa ::= expr_multiplicativa OP_MULT expr_aditiva
+    | expr_multiplicativa OP_DIV_DECIMAL expr_aditiva
+    | expr_multiplicativa OP_DIV_ENTERA expr_aditiva
+    | expr_aditiva;
+
+expr_aditiva ::= expr_aditiva  OP_SUMA expr_potencia
+    | expr_aditiva  OP_RESTA expr_potencia
+    | expr_potencia;
+
+expr_potencia ::= expr_negativo OP_POTENCIA expr_potencia
+    | expr_negativo;
+
+expr_negativo ::= OP_RESTA literal_numerico
+    | expr_primaria;
+
+expr_primaria ::= literal
+    | ID
+    | acceso_arreglo
+    | llamada_funcion
+    | OPEN_PAREN expr_modulo CLOSE_PAREN;
+
 
 literal_numerico ::= LIT_INT
     | LIT_FLOAT;
+
+argumento_funcion ::= expr_modulo;
+
+lista_argumentos_funcion ::= argumento_funcion COMA lista_argumentos_funcion
+    | argumento_funcion;
+
+llamada_funcion ::= ID OPEN_PAREN lista_argumentos_funcion CLOSE_PAREN
+    | ID OPEN_PAREN CLOSE_PAREN;
+
+
 
 literal ::= literal_numerico
     | LIT_CHAR
