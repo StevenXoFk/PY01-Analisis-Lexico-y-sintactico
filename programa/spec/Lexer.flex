@@ -11,8 +11,11 @@ import compilador.ErrorReporter;
 %cup
 %line
 %column
+%xstate COMENTARIO
 
 %{
+    private int lineComentario;
+    private int columnComentario;
     private Symbol symbol(int type) {
         return new Symbol(type, yyline + 1, yycolumn + 1, yytext());
     }
@@ -79,13 +82,14 @@ opDiferente = "!="
 opAnd = "λ"
 opOr = "θ"
 opNegacion = "Σ"
-aperturaLinea = "\|"
+aperturaLinea = "|"
 aperturaBloque = "¡"
 cierreBloque = "!"
 coma = ","
 comillas = "'"
 comillasDobles = "\""
-
+saltoLinea = "\n"
+tabulador = "\t"
 
 cero = "0"
 punto = "."
@@ -101,6 +105,11 @@ litInt = {cero} | {partEntera}
 litChar = {comillas} {partChar} {comillas}
 litStr = {comillasDobles} {partStr} {comillasDobles}
 litBool = {true} | {false}
+
+contenidoLinea = [^\r\n]*
+comentarioLinea = {aperturaLinea} {contenidoLinea}
+
+
 %%
 
 /* ====== Palabras reservadas */
@@ -152,7 +161,24 @@ litBool = {true} | {false}
 {coma}              { return symbol(sym.COMA); }
 {id}                { return symbol(sym.ID); }
 
+/* comentarios */
+{comentarioLinea}   {}
+{aperturaBloque}    {
+                        lineComentario = yyline + 1;
+                        columnComentario = yycolumn + 1;
+                        yybegin(COMENTARIO);
+                    }
+
 
 {blanco} {}
 
 [^] { ErrorReporter.lexico("Caracter no reconocido '" + yytext() + "'", yycolumn +1, yyline +1); }
+<COMENTARIO> {
+    {cierreBloque} { yybegin(YYINITIAL); }
+    [^!]+ { }
+    <<EOF>> { 
+        ErrorReporter.lexico("Comentario sin cerrar", columnComentario, lineComentario);
+        yybegin(YYINITIAL);
+        return symbol(sym.EOF);
+    }
+}
