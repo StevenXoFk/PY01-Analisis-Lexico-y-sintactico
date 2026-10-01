@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 
 
 public class Main {
@@ -29,9 +30,17 @@ public class Main {
 
         try (Reader lector = new BufferedReader(new InputStreamReader(
             new FileInputStream(archivoFuente), StandardCharsets.UTF_8))) {
+                Path rutaTokens = Path.of(
+                    "salida", 
+                    archivoFuente.getName().replaceFirst("[.][^.]+$","") + "_tokens.txt"
+                );
+
                 Lexer lexer = new Lexer(lector);
-                Parser parser = new Parser(lexer);
-                parser.parse();
+                try (TokenReporter tokenReporter = new TokenReporter(rutaTokens)) {
+                    ReportingLexer reportingLexer = new ReportingLexer(lexer, tokenReporter);
+                    Parser parser = new Parser(reportingLexer);
+                    parser.parse();
+                }
         } catch (Exception e) {
             System.out.println("El analisis se detuvo" + e.getMessage());
             System.out.println();
