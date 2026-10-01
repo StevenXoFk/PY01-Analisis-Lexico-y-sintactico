@@ -31,8 +31,6 @@ digitoN = [1-9]
 
 restoId = [_a-zA-Z0-9]
 partId = [_a-zA-Z]
-simbolo = [\!\#\$\%\&\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\]\^\_\`\{\}\|\~\?\¿\¡]
-simboloComentario = [\!\#\$\%\&\(\)\*\+\,\-\.\/\:\;\<\=\>\?\@\[\]\^\_\`\{\}\|\~]
 
 id = ({partId} {restoId}*)+
 
@@ -97,8 +95,9 @@ ceroF = "0.0"
 
 partEntera = {digitoN} {digitos}
 partDecimal = {digitos} {digitoN}
-partChar = {espacio} | {digito} | {letra} | {simbolo}
-partStr = {partChar}*
+partChar = [^\'\n\r]
+partStr = [^\"\r\n]*
+/*" */
 
 litFloat = {ceroF} | {cero} {punto} {partDecimal} | {partEntera} {punto} {partDecimal} | {partEntera} {punto} {cero}
 litInt = {cero} | {partEntera}
@@ -160,6 +159,10 @@ comentarioLinea = {aperturaLinea} {contenidoLinea}
 {opNegacion}        { return symbol(sym.OP_NEGACION); }
 {coma}              { return symbol(sym.COMA); }
 {id}                { return symbol(sym.ID); }
+{litInt}           { return symbol(sym.LIT_INT); }
+{litFloat}         { return symbol(sym.LIT_FLOAT); }
+{litChar}          { return symbol(sym.LIT_CHAR); }
+{litStr}           { return symbol(sym.LIT_STRING); }
 
 /* comentarios */
 {comentarioLinea}   {}
