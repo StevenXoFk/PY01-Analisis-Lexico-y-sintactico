@@ -1,9 +1,38 @@
 package compilador.generated;
 
 import java_cup.runtime.*;
+import compilador.ErrorReporter;
 
 parser code {:
-    //Errores
+    @Override
+    public void syntax_error(Symbol token) {
+        int linea = token.left;
+        int columna = token.right;
+        String encontrado;
+
+        if (token.sym == sym.EOF) {
+            Symbol previo = (Symbol) stack.peek();
+            linea = previo.left;
+            columna = previo.right;
+            encontrado = "fin de archivo";
+        } else {
+            encontrado = "'" + token.value + "' (" + sym.terminalNames[token.sym] + ")";
+        }
+
+        ErrorReporter.sintactico("Token inesperado: " + encontrado,
+                Math.max(columna, 1), Math.max(linea, 1));
+    }
+
+    // Basta un token correcto después de un error para reportar el siguiente,
+    // así no se pierden errores en líneas consecutivas.
+    @Override
+    public int error_sync_size() {
+        return 1;
+    }
+
+    @Override
+    public void unrecovered_syntax_error(Symbol token) {
+    }
 :};
 
 //  ===== Terminales =====
@@ -164,7 +193,8 @@ var_simple ::= var_arreglo
 lista_parametros ::= var_simple COMA lista_parametros
     | var_simple;
 
-bloque ::= OPEN_LLAVES lista_sentencias CLOSE_LLAVES;
+bloque ::= OPEN_LLAVES lista_sentencias CLOSE_LLAVES
+    | OPEN_LLAVES lista_sentencias error CLOSE_LLAVES;
 
 funcion ::= tipo_retorno ID OPEN_PAREN lista_parametros CLOSE_PAREN bloque
     | tipo_retorno ID OPEN_PAREN CLOSE_PAREN bloque;
@@ -176,9 +206,11 @@ declaracion_global ::= creacion_simple
     | creacion_arreglo;
 
 elemento_programa ::= declaracion_global
-    | funcion;
+    | funcion
+    | error FIN_SENTENCIA
+    | error bloque;
 
-elemento_programa_cm ::= elemento_programa_cm elemento_programa
+elemento_programa_cm ::= elemento_programa elemento_programa_cm
     | ;
 
 programa ::= elemento_programa_cm funcion_principal elemento_programa_cm;
@@ -291,9 +323,11 @@ sentencia ::= sentencia_var
     | sent_write
     | sent_if
     | sent_while
-    | sent_for;
+    | sent_for
+    | error FIN_SENTENCIA
+    | error bloque;
 
-lista_sentencias ::= sentencia lista_sentencias
+lista_sentencias ::= lista_sentencias sentencia
     | ;
 
 op_orden ::= OP_MAYOR
