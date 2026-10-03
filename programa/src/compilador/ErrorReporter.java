@@ -9,6 +9,21 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+/**
+ * Acumula y reporta errores de análisis léxico, sintáctico y semántico.
+ * Los cuales los errores se almacenan en una lista y se pueden mostrar en consola.
+ * .
+ * @Entrada: mensaje de error, línea y columna donde ocurrió el error.
+ * @Salida: lista de errores acumulados y mostrados en consola.
+ * 
+ * @Restricciones: 
+ * - El orden de parámetros para los métodos de reporte de errores debe ser: mensaje, columna, línea.
+ * - Los errores se deben mostrar en orden ascendente por línea y columna.
+ * 
+ * @Objetivo: Poder proporcionar un mecanismo para acumular y reportar los errores
+ * que ocurren durante el análisis léxico, sintáctico y semántico de un archivo fuente.
+ */
+
 public class ErrorReporter {
     public static class ErrorAnalisis {
         public final String mensaje;
@@ -31,28 +46,58 @@ public class ErrorReporter {
 
     private static final List<ErrorAnalisis> errores = new ArrayList<>();
 
+    /**
+     * Registra un error léxico.
+     * @Entrada: mensaje de error, columna y línea donde ocurrió el error.
+     * @Salida: Se agrega un error léxico a la lista de errores.
+     */
     public static void lexico(String msj, int columna, int linea) {
         errores.add(new ErrorAnalisis(msj, linea, columna, "ERROR LÉXICO"));
     }
 
+    /**
+     * Registra un error sintáctico.
+     * @Entrada: mensaje de error, columna y línea donde ocurrió el error.
+     * @Salida: Se agrega un error sintáctico a la lista de errores.
+     */
     public static void sintactico(String msj, int columna, int linea) {
         errores.add(new ErrorAnalisis(msj, linea, columna, "ERROR SINTÁCTICO"));
     }
 
+    /**
+     * Registra un error semántico.
+     * @Entrada: mensaje de error, columna y línea donde ocurrió el error.
+     * @Salida: Se agrega un error semántico a la lista de errores.
+     */
     public static void semantico(String msj, int columna, int linea) {
         errores.add(new ErrorAnalisis(msj, linea, columna, "ERROR SEMÁNTICO"));
     }
 
+    /**
+     * Verifica si hay errores acumulados.
+     * @Entrada: Ninguna.
+     * @Salida: true si hay errores, false si no hay errores.
+    */
     public static boolean hayErrores() {
         return !errores.isEmpty();
     }
 
+    /**
+     * Obtiene la lista de errores acumulados.
+     * @Entrada: Ninguna.
+     * @Salida: Lista de errores acumulados, ordenada por línea y columna.
+     */
     public static List<ErrorAnalisis> getErrores() {
         List<ErrorAnalisis> copia = new ArrayList<>(errores);
         copia.sort(Comparator.comparingInt((ErrorAnalisis e) -> e.linea).thenComparingInt(e -> e.columna));
         return copia;
     }
 
+    /**
+     * Muestra los errores acumulados en consola.
+     * @Entrada: Ninguna.
+     * @Salida: Se imprimen los errores en consola.
+     */
     public static void mostrarErrores() {
         if (errores.isEmpty()) {
             System.out.println("No se encontraron errores.");
@@ -64,6 +109,11 @@ public class ErrorReporter {
         }
     }
 
+    /**
+     * Limpia la lista de errores acumulados.
+     * @Entrada: Ninguna.
+     * @Salida: Se limpia la lista de errores.
+     */
     public static void limpiarErrores() {
         errores.clear();
     }
