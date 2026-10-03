@@ -17,7 +17,7 @@ public class TokenReporter implements AutoCloseable {
             Files.createDirectories(carpeta);
         }
         writer = Files.newBufferedWriter(ruta, StandardCharsets.UTF_8);
-        writer.write("LINEA\tCOLUMNA\tTOKEN\tLEXEMA");
+        writer.write(String.format("%-8s%-10s%-25s%-30s","Linea", "Columna", "Token", "Lexema"));
         writer.newLine();
     }
 
@@ -29,7 +29,7 @@ public class TokenReporter implements AutoCloseable {
         String nombreToken = sym.terminalNames[token.sym];
         String lexema = token.value != null ? token.value.toString() : "";
         lexema = escape(lexema);
-        writer.write(String.format("%d\t%d\t%s\t%s", token.left, token.right, nombreToken, lexema));
+        writer.write(String.format("%-8s%-10s%-25s%-30s", token.left, token.right, nombreToken, lexema));
         writer.newLine();
     }
 
