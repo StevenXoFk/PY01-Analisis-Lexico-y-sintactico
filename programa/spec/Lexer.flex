@@ -21,9 +21,7 @@ import compilador.ErrorReporter;
     }
 %}
 
-espacio = " "
 blanco = [ \t\n\r\f]+
-letra = [a-zA-Z]
 
 digito = [0-9]
 digitos = {digito}*
@@ -32,7 +30,7 @@ digitoN = [1-9]
 restoId = [_a-zA-Z0-9]
 partId = [_a-zA-Z]
 
-id = ({partId} {restoId}*)+
+id = {partId} {restoId}*
 
 /* ==== Terminales ===== */
 val = "val"
@@ -86,8 +84,6 @@ cierreBloque = "!"
 coma = ","
 comillas = "'"
 comillasDobles = "\""
-saltoLinea = "\n"
-tabulador = "\t"
 
 cero = "0"
 punto = "."
@@ -163,6 +159,7 @@ comentarioLinea = {aperturaLinea} {contenidoLinea}
 {litFloat}         { return symbol(sym.LIT_FLOAT); }
 {litChar}          { return symbol(sym.LIT_CHAR); }
 {litStr}           { return symbol(sym.LIT_STRING); }
+{litBool}          { return symbol(sym.LIT_BOOL); }
 
 /* comentarios */
 {comentarioLinea}   {}
