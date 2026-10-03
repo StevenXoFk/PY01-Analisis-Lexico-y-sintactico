@@ -1,5 +1,10 @@
 package compilador;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -43,22 +48,43 @@ public class ErrorReporter {
     }
 
     public static List<ErrorAnalisis> getErrores() {
-        errores.sort(Comparator.comparingInt(e -> e.linea));
-        return errores;
+        List<ErrorAnalisis> copia = new ArrayList<>(errores);
+        copia.sort(Comparator.comparingInt((ErrorAnalisis e) -> e.linea).thenComparingInt(e -> e.columna));
+        return copia;
     }
 
     public static void mostrarErrores() {
         if (errores.isEmpty()) {
             System.out.println("No se encontraron errores.");
-        } else {
-            System.out.println("Se encontraron los siguientes errores:");
-            for (ErrorAnalisis error : errores) {
-                System.out.println(error);
-            }
+            return;
+        }
+        System.out.println("Se encontraron " + errores.size() + " error(es):");
+        for (ErrorAnalisis error : getErrores()) {
+            System.out.println(error);
         }
     }
 
     public static void limpiarErrores() {
         errores.clear();
+    }
+
+    public static void guardarErrores(Path ruta) throws IOException {
+        Path carpeta = ruta.getParent();
+        if (carpeta != null) {
+            Files.createDirectories(carpeta);
+        }
+        try (BufferedWriter writer = Files.newBufferedWriter(ruta, StandardCharsets.UTF_8)) {
+            if (errores.isEmpty()) {
+                writer.write("No se encontraron errores.");
+                writer.newLine();
+                return;
+            }
+            writer.write("Se encontraron " + errores.size() + " error(es):");
+            writer.newLine();
+            for (ErrorAnalisis error : getErrores()) {
+                writer.write(error.toString());
+                writer.newLine();
+            }
+        }
     }
 }
