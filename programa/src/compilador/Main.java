@@ -13,7 +13,6 @@ import java.nio.file.Path;
 
 
 public class Main {
-
     public static void main(String[] args) {
         if (args.length != 1) {
             System.err.println("Uso: run.sh <ruta_archivo_fuente>");
@@ -28,7 +27,6 @@ public class Main {
 
         String nombreBase = archivoFuente.getName().replaceFirst("[.][^.]+$", "");
         Path rutaTokens = Path.of("salida", nombreBase + "_tokens.txt");
-        Path rutaErrores = Path.of("salida", nombreBase + "_errores.txt");
 
         System.out.println("Analizando: " + archivoFuente.getPath());
         System.out.println();
