@@ -59,7 +59,10 @@ non terminal funcion_principal;
 non terminal tipo_retorno;
 non terminal lista_parametros;
 non terminal var_simple;
-non terminal tipo_var;
+non terminal var_arreglo;
+non terminal var_no_arreglo;
+non terminal tipo_arrays;
+non terminal tipo_no_arreglo;
 non terminal bloque;
 
 // Declaraciones y asignaciones
@@ -93,6 +96,15 @@ non terminal sent_break;
 non terminal arg_read;
 non terminal arg_write;
 non terminal expr_retorno;
+
+// Estructuras de control
+non terminal condicion;
+non terminal sent_if;
+non terminal sent_elif;
+non terminal lista_elif;
+non terminal sent_else;
+non terminal sent_while;
+non terminal sent_for;
 
 // Expresiones Aritméticas
 non terminal expr_primaria;
@@ -133,13 +145,21 @@ tipo_retorno ::= INT
     | CHAR
     | BOOL;
 
-tipo_var ::= INT
-    | BOOL
-    | FLOAT
-    | STRING 
+// tipo_var se separó en tipo_arrays y tipo_no_arreglo: con un solo
+// tipo_var, "val int" generaba conflicto reduce/reduce contra tipo_arrays.
+tipo_arrays ::= INT
+    | FLOAT;
+
+tipo_no_arreglo ::= BOOL
+    | STRING
     | CHAR;
 
-var_simple ::= tipo_var ID;
+var_arreglo ::= tipo_arrays ID;
+
+var_no_arreglo ::= tipo_no_arreglo ID;
+
+var_simple ::= var_arreglo
+    | var_no_arreglo;
 
 lista_parametros ::= var_simple COMA lista_parametros
     | var_simple;
@@ -189,6 +209,7 @@ expr_primaria ::= literal
     | ID
     | acceso_arreglo
     | llamada_funcion
+    | expr_incremento
     | OPEN_PAREN expr_modulo CLOSE_PAREN;
 
 
@@ -209,8 +230,7 @@ literal ::= literal_numerico
     | TRUE
     | FALSE;
 
-indice ::= ID
-    | LIT_INT;
+indice ::= expr_modulo;
 
 acceso_arreglo ::= ID OPEN_BRACKET indice CLOSE_BRACKET;
 
@@ -218,21 +238,22 @@ valor_asignable ::= expr_modulo
     | expr_relacional
     | expr_logica;
 
-creacion_simple ::= VAL var_simple FIN_SENTENCIA;
+creacion_simple ::= VAL var_arreglo FIN_SENTENCIA
+    | VAL var_no_arreglo FIN_SENTENCIA;
 
-creacion_asign ::= VAL var_simple ASIGN valor_asignable FIN_SENTENCIA;
+creacion_asign ::= VAL var_arreglo ASIGN valor_asignable FIN_SENTENCIA
+    | VAL var_no_arreglo ASIGN valor_asignable FIN_SENTENCIA;
 
 asignacion ::= ID ASIGN valor_asignable FIN_SENTENCIA;
 
-creacion_arreglo ::= VAL var_simple ASIGN OPEN_LLAVES valores CLOSE_LLAVES FIN_SENTENCIA;
+creacion_arreglo ::= VAL var_arreglo ASIGN OPEN_LLAVES valores CLOSE_LLAVES FIN_SENTENCIA;
 
 asignacion_arreglo ::= acceso_arreglo ASIGN valor_asignable FIN_SENTENCIA;
 
 valores ::= literal_numerico COMA valores
     | literal_numerico;
 
-sentencia_expr ::= expr_modulo FIN_SENTENCIA
-    | expr_incremento FIN_SENTENCIA;
+sentencia_expr ::= expr_modulo FIN_SENTENCIA;
 
 expr_incremento ::= ID OP_INCREMENTO
     | ID OP_DECREMENTO;
@@ -244,7 +265,8 @@ arg_write ::= LIT_STRING
     | LIT_FLOAT
     | TRUE
     | FALSE
-    | ID;
+    | ID
+    | acceso_arreglo;
 
 sent_read ::= READ OPEN_PAREN arg_read CLOSE_PAREN FIN_SENTENCIA;
 
@@ -266,7 +288,10 @@ sentencia ::= sentencia_var
     | sent_return
     | sent_break
     | sent_read
-    | sent_write;
+    | sent_write
+    | sent_if
+    | sent_while
+    | sent_for;
 
 lista_sentencias ::= sentencia lista_sentencias
     | ;
@@ -294,15 +319,39 @@ expr_relacional ::= expr_rel_orden
 op_logico ::= OP_AND
     | OP_OR;
 
-// Se excluyen TRUE, FALSE e ID: el par є: :э generaba conflicto
-// reduce/reduce entre agrupación aritmética y operando lógico.
-// Aceptado:     є: ʃ: a :ʅ > ʃ: b :ʅ :э λ є: ʃ: c :ʅ < ʃ: d :ʅ :э
-// No aceptado:  є: x :э λ є: y :э
-
 operando_logico ::= expr_relacional
-    | expr_negacion;
+    | expr_negacion
+    | TRUE
+    | FALSE
+    | ID
+    | llamada_funcion;
 
 expr_negacion ::= OP_NEGACION OPEN_PAREN operando_logico CLOSE_PAREN;
 
-expr_logica ::= OPEN_PAREN operando_logico CLOSE_PAREN op_logico OPEN_PAREN operando_logico CLOSE_PAREN
+// El primer operando usa expr_modulo en vez de operando_logico
+// para evitar conflictos reduce/reduce con los paréntesis.
+expr_logica ::= OPEN_PAREN expr_relacional CLOSE_PAREN op_logico OPEN_PAREN operando_logico CLOSE_PAREN
+    | OPEN_PAREN expr_negacion CLOSE_PAREN op_logico OPEN_PAREN operando_logico CLOSE_PAREN
+    | OPEN_PAREN expr_modulo CLOSE_PAREN op_logico OPEN_PAREN operando_logico CLOSE_PAREN
     | expr_negacion;
+
+condicion ::= OPEN_PAREN expr_relacional CLOSE_PAREN
+    | OPEN_PAREN expr_logica CLOSE_PAREN
+    | OPEN_PAREN TRUE CLOSE_PAREN
+    | OPEN_PAREN FALSE CLOSE_PAREN
+    | OPEN_PAREN ID CLOSE_PAREN
+    | OPEN_PAREN llamada_funcion CLOSE_PAREN;
+
+sent_elif ::= ELIF condicion bloque;
+
+lista_elif ::= lista_elif sent_elif
+    | ;
+
+sent_else ::= ELSE bloque;
+
+sent_if ::= IF condicion bloque lista_elif sent_else
+    | IF condicion bloque lista_elif;
+
+sent_while ::= WHILE condicion bloque;
+
+sent_for ::= FOR sentencia_var condicion FIN_SENTENCIA expr_incremento bloque;
