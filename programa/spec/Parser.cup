@@ -288,6 +288,7 @@ expr_incremento ::= ID OP_INCREMENTO
 arg_read ::= ID;
 
 arg_write ::= LIT_STRING
+    | LIT_CHAR
     | LIT_INT
     | LIT_FLOAT
     | TRUE
