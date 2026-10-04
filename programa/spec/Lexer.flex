@@ -126,7 +126,6 @@ litFloat = {ceroF} | {cero} {punto} {partDecimal} | {partEntera} {punto} {partDe
 litInt = {cero} | {partEntera}
 litChar = {comillas} {partChar} {comillas}
 litStr = {comillasDobles} {partStr} {comillasDobles}
-litBool = {true} | {false}
 
 %%
 // =============== Palabras Reservadas ===================
@@ -191,7 +190,6 @@ litBool = {true} | {false}
 {litFloat}         { return symbol(sym.LIT_FLOAT); }
 {litChar}          { return symbol(sym.LIT_CHAR); }
 {litStr}           { return symbol(sym.LIT_STRING); }
-{litBool}          { return symbol(sym.LIT_BOOL); }
 
 // =============== Identificadores
 {id}                { return symbol(sym.ID); }
