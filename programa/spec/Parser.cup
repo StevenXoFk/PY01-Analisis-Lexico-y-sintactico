@@ -132,6 +132,7 @@ non terminal op_logico;
 non terminal operando_logico;
 non terminal expr_negacion;
 non terminal expr_logica;
+non terminal base_logica;
 
 
 // Placeholder para expresiones
@@ -181,7 +182,7 @@ elemento_programa ::= declaracion_global
 elemento_programa_cm ::= elemento_programa_cm elemento_programa
     | ;
 
-programa ::= elemento_programa_cm funcion_principal elemento_programa_cm;
+programa ::= elemento_programa_cm funcion_principal;
 
 expr_retorno ::= expr_modulo
     | expr_relacional
@@ -253,7 +254,7 @@ asignacion_arreglo ::= acceso_arreglo ASIGN valor_asignable FIN_SENTENCIA;
 valores ::= literal_numerico COMA valores
     | literal_numerico;
 
-sentencia_expr ::= expr_modulo FIN_SENTENCIA;
+sentencia_expr ::= valor_asignable FIN_SENTENCIA;
 
 expr_incremento ::= ID OP_INCREMENTO
     | ID OP_DECREMENTO;
@@ -320,27 +321,18 @@ op_logico ::= OP_AND
     | OP_OR;
 
 operando_logico ::= expr_relacional
-    | expr_negacion
-    | TRUE
-    | FALSE
-    | ID
-    | llamada_funcion;
+    | expr_negacion;
 
 expr_negacion ::= OP_NEGACION OPEN_PAREN operando_logico CLOSE_PAREN;
 
-// El primer operando usa expr_modulo en vez de operando_logico
-// para evitar conflictos reduce/reduce con los paréntesis.
-expr_logica ::= OPEN_PAREN expr_relacional CLOSE_PAREN op_logico OPEN_PAREN operando_logico CLOSE_PAREN
-    | OPEN_PAREN expr_negacion CLOSE_PAREN op_logico OPEN_PAREN operando_logico CLOSE_PAREN
-    | OPEN_PAREN expr_modulo CLOSE_PAREN op_logico OPEN_PAREN operando_logico CLOSE_PAREN
+expr_logica ::= base_logica
+    | expr_logica op_logico base_logica
     | expr_negacion;
 
+base_logica ::= OPEN_PAREN operando_logico CLOSE_PAREN;
+
 condicion ::= OPEN_PAREN expr_relacional CLOSE_PAREN
-    | OPEN_PAREN expr_logica CLOSE_PAREN
-    | OPEN_PAREN TRUE CLOSE_PAREN
-    | OPEN_PAREN FALSE CLOSE_PAREN
-    | OPEN_PAREN ID CLOSE_PAREN
-    | OPEN_PAREN llamada_funcion CLOSE_PAREN;
+    | OPEN_PAREN expr_logica CLOSE_PAREN;
 
 sent_elif ::= ELIF condicion bloque;
 
