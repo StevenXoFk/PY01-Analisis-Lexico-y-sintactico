@@ -20,6 +20,7 @@ import java.nio.file.Path;
  */
 public class TokenReporter implements AutoCloseable {
     private final BufferedWriter writer;
+    private static final String FORMATO = "%-8s%-10s%-25s%-35s%-20s%-30s%n";
 
     public TokenReporter(Path ruta) throws IOException {
         Path carpeta = ruta.getParent();
@@ -27,7 +28,7 @@ public class TokenReporter implements AutoCloseable {
             Files.createDirectories(carpeta);
         }
         writer = Files.newBufferedWriter(ruta, StandardCharsets.UTF_8);
-        writer.write(String.format("%-8s%-10s%-25s%-30s","Linea", "Columna", "Token", "Lexema"));
+        writer.write(String.format(FORMATO,"Linea", "Columna", "Token", "Lexema", "Tabla", "Info"));
         writer.newLine();
     }
 
@@ -43,8 +44,10 @@ public class TokenReporter implements AutoCloseable {
 
         String nombreToken = sym.terminalNames[token.sym];
         String lexema = token.value != null ? token.value.toString() : "";
+        String tabla = clasificarTabla(token.sym);
+        String info = construirInfo(token.sym, lexema);
         lexema = escape(lexema);
-        writer.write(String.format("%-8s%-10s%-25s%-30s", token.left, token.right, nombreToken, lexema));
+        writer.write(String.format(FORMATO, token.left, token.right, nombreToken, lexema, tabla, info));
         writer.newLine();
     }
 
@@ -57,6 +60,71 @@ public class TokenReporter implements AutoCloseable {
         return lexema.replace("\n", "\\n")
                      .replace("\t", "\\t")
                      .replace("\r", "\\r");
+    }
+
+    /**
+     * Construye información adicional sobre el token, como su tipo y valor.
+     * @Entrada: Código del token y su lexema.
+     * @Salida: Información adicional sobre el token.
+     */
+    private String clasificarTabla(int symCode) {
+        switch (symCode) {
+            case sym.VAL:
+            case sym.IF:
+            case sym.ELIF:
+            case sym.ELSE:
+            case sym.WHILE:
+            case sym.FOR:
+            case sym.RETURN:
+            case sym.BREAK:
+            case sym.READ:
+            case sym.WRITE:
+            case sym.PRINCIPAL:
+            case sym.VOID:
+            case sym.INT:
+            case sym.FLOAT:
+            case sym.BOOL:
+            case sym.CHAR:
+            case sym.STRING:
+                return "Reservadas";
+
+            case sym.ID:
+                return "Identificadores";
+
+            case sym.LIT_INT:
+            case sym.LIT_FLOAT:
+            case sym.LIT_CHAR:
+            case sym.LIT_STRING:
+            case sym.TRUE:
+            case sym.FALSE:
+                return "Constantes";
+
+            default:
+                return "ninguna";
+        }
+    }
+    
+    /**
+     * Construye información adicional sobre el token, como su tipo y valor.
+     * @Entrada: Código del token y su lexema.
+     * @Salida: Información adicional sobre el token.
+     */
+    private String construirInfo(int symCode, String lexema) {
+        switch (symCode) {
+            case sym.LIT_INT:
+                return "valor=" + lexema + ", tipo=int";
+            case sym.LIT_FLOAT:
+                return "valor=" + lexema + ", tipo=float";
+            case sym.LIT_CHAR:
+                return "valor=" + lexema + ", tipo=char";
+            case sym.LIT_STRING:
+                return "valor=" + lexema + ", tipo=string";
+            case sym.TRUE:
+            case sym.FALSE:
+                return "valor=" + lexema + ", tipo=bool";
+            default:
+                return "";
+        }
     }
 
     @Override

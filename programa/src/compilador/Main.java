@@ -55,11 +55,11 @@ public class Main {
         System.out.println();
 
         if (ErrorReporter.hayErrores()) {
-            System.out.println("Se genero errores durante el análisis.");
+            System.out.println("El archivo no puede ser generado por la gramática.");
             System.out.println("Total de errores: " + ErrorReporter.getErrores().size());
             System.exit(1);
         } else {
-            System.out.println("Se completó el análisis sin errores.");
+            System.out.println("El archivo se pudo ser generado con éxito");
             System.exit(0);
         }
     }
