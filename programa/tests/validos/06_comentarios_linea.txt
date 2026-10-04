@@ -1,3 +1,0 @@
-a | hola while mod
-b
-| comentario sin Enter al final

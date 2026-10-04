@@ -1,7 +1,0 @@
-a
-¡ comentario
-  de varias
-  líneas con while y mod !
-b
-¡!
-c
