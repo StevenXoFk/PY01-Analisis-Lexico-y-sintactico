@@ -1,6 +1,22 @@
-/**
-* Lexer.flex Analizador léxico para el compilador 
-*/
+// ======================================
+// Lexer.flex
+//
+// @Entrada: Un flujo de caracteres UTF-8
+// @Salida: tokens (lib java_cup.runtime.Symbol) para el parser
+//   - sym: codigo del terminal (sym.XXX)
+//   - left: linea del token (yyline + 1)
+//   - right: columna del token (yycolumn + 1)
+//   - value: texto del token (yytext())
+//   - Los errores lexicos se reportan en el compilador.ErrorReporter
+//
+// @Restricciones:
+//   - Los delimitadores y operadores son caracteres Unicode y no ASCII
+//   - El archivo de entrada debe estar en UTF-8
+//   - El orden de las reglas respeta la precedencia de los tokens
+//
+// @Objetivo: Implementar un analizador léxico para el lenguaje de programación definido en la especificación del proyecto
+//
+// ==========================================
 
 package compilador.generated;
 
