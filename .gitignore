@@ -1,6 +1,5 @@
 # Compilados y generados
 programa/bin/
-programa/salida/
 programa/src/compilador/generated/
 *.class
 *~
