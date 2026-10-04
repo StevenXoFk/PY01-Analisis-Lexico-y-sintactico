@@ -44,9 +44,11 @@ public class TokenReporter implements AutoCloseable {
 
         String nombreToken = sym.terminalNames[token.sym];
         String lexema = token.value != null ? token.value.toString() : "";
+        lexema = escape(lexema);
+
         String tabla = clasificarTabla(token.sym);
         String info = construirInfo(token.sym, lexema);
-        lexema = escape(lexema);
+        
         writer.write(String.format(FORMATO, token.left, token.right, nombreToken, lexema, tabla, info));
         writer.newLine();
     }
