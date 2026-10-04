@@ -29,7 +29,6 @@ public class TokenReporter implements AutoCloseable {
         }
         writer = Files.newBufferedWriter(ruta, StandardCharsets.UTF_8);
         writer.write(String.format(FORMATO,"Linea", "Columna", "Token", "Lexema", "Tabla", "Info"));
-        writer.newLine();
     }
 
     /**
@@ -50,7 +49,6 @@ public class TokenReporter implements AutoCloseable {
         String info = construirInfo(token.sym, lexema);
         
         writer.write(String.format(FORMATO, token.left, token.right, nombreToken, lexema, tabla, info));
-        writer.newLine();
     }
 
     /**
