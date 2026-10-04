@@ -110,6 +110,40 @@ public class ErrorReporter {
     }
 
     /**
+     * Guarda los errores acumulados en un archivo.
+     * @Entrada: Ruta del archivo donde se guardarán los errores.
+     * @Salida: Se escriben los errores en el archivo especificado.
+     */
+    public static void guardarErrores(Path ruta) throws IOException {
+        Path carpeta = ruta.getParent();
+        if (carpeta != null) {
+            Files.createDirectories(carpeta);
+        }
+        try (BufferedWriter writer = Files.newBufferedWriter(ruta, StandardCharsets.UTF_8)) {
+            if (errores.isEmpty()) {
+                writer.write("No se encontraron errores.");
+                writer.newLine();
+                return;
+            }
+            writer.write("Se encontraron " + errores.size() + " error(es):");
+            writer.newLine();
+            for (ErrorAnalisis error : getErrores()) {
+                writer.write(error.toString());
+                writer.newLine();
+            }
+        }
+    }
+
+    /**
+     * Obtiene el total de errores acumulados.
+     * @Entrada: Ninguna.
+     * @Salida: Total de errores acumulados.
+     */
+    public static int totalErrores() {
+        return errores.size();
+    }
+
+    /**
      * Limpia la lista de errores acumulados.
      * @Entrada: Ninguna.
      * @Salida: Se limpia la lista de errores.

@@ -26,7 +26,8 @@ public class Main {
         }
 
         String nombreBase = archivoFuente.getName().replaceFirst("[.][^.]+$", "");
-        Path rutaTokens = Path.of("salida", nombreBase + "_tokens.txt");
+        Path rutaTokens  = Path.of("salida", nombreBase + "_tokens.txt");
+        Path rutaErrores = Path.of("salida", nombreBase + "_errores.txt");
 
         System.out.println("Analizando: " + archivoFuente.getPath());
         System.out.println();
@@ -51,15 +52,20 @@ public class Main {
         }
 
         ErrorReporter.mostrarErrores();
+        try {
+            ErrorReporter.guardarErrores(rutaErrores);
+        } catch (Exception e) {
+            System.err.println("Error al guardar los errores en el archivo: " + e.getMessage());
+        }
 
         System.out.println();
 
         if (ErrorReporter.hayErrores()) {
-            System.out.println("El archivo no puede ser generado por la gramática.");
+            System.out.println("El archivo no puede ser generado por la gramática. (mirar errores en " + rutaErrores.toString() + ")");
             System.out.println("Total de errores: " + ErrorReporter.getErrores().size());
             System.exit(1);
         } else {
-            System.out.println("El archivo se pudo ser generado con éxito");
+            System.out.println("El archivo se pudo ser generado con éxito, (archivo de tokens en " + rutaTokens.toString() + ")");
             System.exit(0);
         }
     }
