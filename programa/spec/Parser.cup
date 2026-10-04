@@ -1,3 +1,20 @@
+// ======================================
+// Parser.cup
+//
+// @Entrada: Flujo de tokens del lexer
+// @Salida: 
+//   - Arbol de analisis sintactico.
+//   - Los errores sintacticos se reportan a compilador.ErrorReporter
+//
+// @Restricciones:
+//   - Gramatica LALR(1) sin conflictos
+//   - No se permite produccion generica
+//   - La precedencia se resuelve con la estructura de la gramatica, no con delcaraciones precedence de CUP
+//
+// @objetivo: Definir los tokens y la gramática del lenguaje de programación definido en la especificación del proyecto
+//
+// ==========================================
+
 package compilador.generated;
 
 import java_cup.runtime.*;
