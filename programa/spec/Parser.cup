@@ -190,7 +190,8 @@ var_simple ::= var_arreglo
 lista_parametros ::= var_simple COMA lista_parametros
     | var_simple;
 
-bloque ::= OPEN_LLAVES lista_sentencias CLOSE_LLAVES;
+bloque ::= OPEN_LLAVES lista_sentencias CLOSE_LLAVES
+    | OPEN_LLAVES error CLOSE_LLAVES;
 
 funcion ::= tipo_retorno ID OPEN_PAREN lista_parametros CLOSE_PAREN bloque
     | tipo_retorno ID OPEN_PAREN CLOSE_PAREN bloque;
