@@ -18,9 +18,18 @@
 package compilador.generated;
 
 import java_cup.runtime.*;
+import compilador.ErrorReporter;
 
 parser code {:
-    //Errores
+    public void syntax_error(Symbol sim) {
+        ErrorReporter.sintactico("Se encontró '" + (sim.value != null ? sim.value : "?") + "'",
+        sim.right, sim.left);
+    }
+
+    public void unrecovered_syntax_error(Symbol sim) {
+        ErrorReporter.sintactico("Error no recuperable en '" + (sim.value != null ? sim.value : "?") + "'",
+        sim.right, sim.left);
+    }
 :};
 
 //  ===== Terminales =====
@@ -311,6 +320,7 @@ sentencia ::= sentencia_var
     | sent_for;
 
 lista_sentencias ::= sentencia lista_sentencias
+    | error FIN_SENTENCIA lista_sentencias
     | ;
 
 op_orden ::= OP_MAYOR
